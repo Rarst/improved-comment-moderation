@@ -76,7 +76,7 @@ class Improved_Comment_Moderation {
 			array_slice( $columns, 1 )
 		);
 
-		unset($columns['author']);
+		unset( $columns['author'] );
 
 		return $columns;
 	}
@@ -101,14 +101,13 @@ class Improved_Comment_Moderation {
 
 		if ( 'gravatar' == $column ) {
 
-			if ( empty($comment->comment_author_email) ) {
+			if ( empty( $comment->comment_author_email ) ) {
 
 				$blank = 'blank';
-			}
-			else {
+			} else {
 
 				$email_counts = self::get_approved_counts( 'comment_author_email', get_comment_author_email( $id ) );
-				$blank        = empty($email_counts['approved']) ? 'blank' : '';
+				$blank        = empty( $email_counts['approved'] ) ? 'blank' : '';
 			}
 
 			echo get_avatar( $comment->comment_author_email, 64, $blank );
@@ -132,19 +131,19 @@ class Improved_Comment_Moderation {
 		if ( 'http://' == $author_url )
 			$author_url = '';
 
-		if ( ! empty($author_url) ) {
+		if ( ! empty( $author_url ) ) {
 
 			$url = parse_url( str_replace( '&#038;', '&', $author_url ) );
 
 			$output .= "<br /><a href='{$author_url}'>" . self::get_colored_span( 'comment_author_url', "%{$url['host']}%", true, $url['host'] );
 
-			if ( ! empty($url['path']) && '/' != $url['path'] )
+			if ( ! empty( $url['path'] ) && '/' != $url['path'] )
 				$output .= '<br />' . str_repeat( '&nbsp;', 8 ) . esc_html( $url['path'] );
 
-			if ( ! empty($url['query']) )
+			if ( ! empty( $url['query'] ) )
 				$output .= '<br />' . str_repeat( '&nbsp;', 8 ) . '?' . esc_html( $url['query'] );
 
-			if ( ! empty($url['fragment']) )
+			if ( ! empty( $url['fragment'] ) )
 				$output .= '<br />' . str_repeat( '&nbsp;', 8 ) . '#' . esc_html( $url['fragment'] );
 
 			$output .= '</a><br />';
@@ -152,7 +151,7 @@ class Improved_Comment_Moderation {
 
 		if ( $wp_list_table->user_can ) {
 
-			if ( ! empty($comment->comment_author_email) ) {
+			if ( ! empty( $comment->comment_author_email ) ) {
 
 				$email   = get_comment_author_email();
 				$email   = self::get_colored_span( 'comment_author_email', $email );
@@ -166,7 +165,7 @@ class Improved_Comment_Moderation {
 			if ( 'spam' == $comment_status )
 				$output .= '&amp;comment_status=spam';
 
-			$output .= "\">$ip</a>";
+			$output .= "\">{$ip}</a>";
 		}
 
 		$output .= '<br /><br />';
@@ -184,15 +183,15 @@ class Improved_Comment_Moderation {
 	 */
 	static function get_colored_span( $field, $value, $like = false, $text = '' ) {
 
-		if ( empty($text) )
+		if ( empty( $text ) )
 			$text = $value;
 
-		if ( ! empty($_REQUEST['comment_status']) && in_array( $_REQUEST['comment_status'], array( 'spam', 'approved' ) ) )
+		if ( ! empty( $_REQUEST['comment_status'] ) && in_array( $_REQUEST['comment_status'], array( 'spam', 'approved' ) ) )
 			return $text;
 
 		$counts = wp_parse_args( self::get_approved_counts( $field, $value, $like ), array(
 			'approved' => 0,
-			'spam'		 => 0,
+			'spam'     => 0,
 		) );
 
 		$approved = $counts['approved'];
