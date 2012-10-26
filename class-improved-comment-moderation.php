@@ -172,7 +172,8 @@ class Improved_Comment_Moderation {
 
 		if ( $approved > $spam )
 			return "<span class='approved'>{$text}</span>";
-		elseif ( $spam > $approved )
+
+		if ( $spam > $approved )
 			return "<span class='spam'>{$text}</span>";
 
 		return $text;
