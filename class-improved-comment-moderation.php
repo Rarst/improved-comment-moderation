@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Main wrapper class of the plugin.
+ */
 class Improved_Comment_Moderation {
 
 	static function on_load() {
@@ -54,6 +57,11 @@ class Improved_Comment_Moderation {
 	<?php
 	}
 
+	/**
+	 * @param array $columns setup for comments table
+	 *
+	 * @return array
+	 */
 	static function manage_columns( $columns ) {
 
 		remove_filter( 'comment_author', 'floated_admin_avatar' );
@@ -73,11 +81,20 @@ class Improved_Comment_Moderation {
 		return $columns;
 	}
 
+	/**
+	 * @param string $text of comment
+	 *
+	 * @return string
+	 */
 	static function comment_text( $text ) {
 
 		return self::author_improved() . $text;
 	}
 
+	/**
+	 * @param string $column name
+	 * @param int    $id     of comment
+	 */
 	static function manage_comments_custom_column( $column, $id ) {
 
 		global $comment;
@@ -98,6 +115,9 @@ class Improved_Comment_Moderation {
 		}
 	}
 
+	/**
+	 * @return string improved author details
+	 */
 	static function author_improved() {
 
 		global $wp_list_table, $comment, $comment_status;
@@ -154,6 +174,14 @@ class Improved_Comment_Moderation {
 		return $output;
 	}
 
+	/**
+	 * @param string  $field name of database field
+	 * @param string  $value value to count for
+	 * @param bool    $like  fuzzy or strict comparison
+	 * @param string  $text  anchor text
+	 *
+	 * @return string $text wrapped in span with class if known good/bad $value
+	 */
 	static function get_colored_span( $field, $value, $like = false, $text = '' ) {
 
 		if ( empty($text) )
@@ -179,6 +207,13 @@ class Improved_Comment_Moderation {
 		return $text;
 	}
 
+	/**
+	 * @param string  $field name of database field
+	 * @param string  $value value to count for
+	 * @param bool    $like  fuzzy or strict comparison
+	 *
+	 * @return array of counts for approved and spam statuses
+	 */
 	static function get_approved_counts( $field, $value, $like = false ) {
 
 		global $wpdb;
