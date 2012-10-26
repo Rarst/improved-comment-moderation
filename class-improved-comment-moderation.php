@@ -124,7 +124,7 @@ class Improved_Comment_Moderation {
 		$output = '';
 
 		$author  = self::get_colored_span( 'comment_author', get_comment_author() );
-		$output .= '<strong>' . $author . '</strong><br />';
+		$output .= '<strong>' . $author . '</strong>' . self::get_pending_text( 'comment_author', $author ) . '<br />';
 
 		$author_url = get_comment_author_url();
 
@@ -155,7 +155,7 @@ class Improved_Comment_Moderation {
 
 				$email   = get_comment_author_email();
 				$email   = self::get_colored_span( 'comment_author_email', $email );
-				$output .= '<br />' . get_comment_author_email_link( $email ) . '<br />';
+				$output .= '<br />' . get_comment_author_email_link( $email ) . self::get_pending_text( 'comment_author_email', $email ) . '<br />';
 			}
 
 			$ip = get_comment_author_IP();
@@ -166,6 +166,7 @@ class Improved_Comment_Moderation {
 				$output .= '&amp;comment_status=spam';
 
 			$output .= "\">{$ip}</a>";
+			$output .= self::get_pending_text( 'comment_author_IP', $ip );
 		}
 
 		$output .= '<br /><br />';
@@ -217,7 +218,7 @@ class Improved_Comment_Moderation {
 
 		global $wpdb;
 
-		$key = md5( $field . $value );
+		$key = md5( 'approved_' . $field . $value );
 
 		$counts = wp_cache_get( $key, 'comment-moderation' );
 
@@ -244,5 +245,54 @@ class Improved_Comment_Moderation {
 		}
 
 		return $counts;
+	}
+
+	/**
+	 * @param string  $field name of database field
+	 * @param string  $value value to count for
+	 * @param bool    $like  fuzzy or strict comparison
+	 *
+	 * @return string linkified number of matching pending comments or empty
+	 */
+	static function get_pending_text( $field, $value, $like = false ) {
+
+		$text    = '';
+		$pending = self::get_pending_count( $field, $value, $like );
+
+		if ( 1 < $pending ) {
+
+			$text = ' (<a href="edit-comments.php?s=' . $value . '&amp;mode=detail">' . (int) $pending . ' pending</a>)';
+		}
+
+		return $text;
+	}
+
+	/**
+	 * @param string  $field name of database field
+	 * @param string  $value value to count for
+	 * @param bool    $like  fuzzy or strict comparison
+	 *
+	 * @return int number of matching pending comments
+	 */
+	static function get_pending_count( $field, $value, $like = false ) {
+
+		global $wpdb;
+
+		$key   = md5( 'pending_' . $field . $value );
+		$count = wp_cache_get( $key, 'comment-moderation' );
+
+		if ( ! is_numeric( $count ) ) {
+
+			if ( $like )
+				$where = $wpdb->prepare( "{$field} LIKE %s AND comment_approved = '0'", $value );
+			else
+				$where = $wpdb->prepare( "{$field} = %s AND comment_approved = '0'", $value );
+
+			$count = $wpdb->get_var( "SELECT COUNT(*) AS count FROM {$wpdb->comments} WHERE {$where};" );
+
+			wp_cache_set( $key, $count, 'comment-moderation', 30 );
+		}
+
+		return (int)$count;
 	}
 }
