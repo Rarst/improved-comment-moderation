@@ -12,13 +12,13 @@ class Improved_Comment_Moderation {
 
 	static function admin_init() {
 
-		add_action( 'load-edit-comments.php', array( __CLASS__, 'load_pagenow' ) );
+		add_action( 'load-edit-comments.php', array( __CLASS__, 'load_edit_comments' ) );
 		add_filter( 'manage_edit-comments_columns', array( __CLASS__, 'manage_columns' ) );
 		add_action( 'manage_comments_custom_column', array( __CLASS__, 'manage_comments_custom_column' ), 10, 2 );
 		add_filter( 'comment_text', array( __CLASS__, 'comment_text' ) );
 	}
 
-	static function load_pagenow() {
+	static function load_edit_comments() {
 
 		add_action( 'admin_print_styles', array( __CLASS__, 'admin_print_styles' ) );
 	}
