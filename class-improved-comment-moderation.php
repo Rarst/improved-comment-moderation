@@ -138,14 +138,25 @@ class Improved_Comment_Moderation {
 
 			$output .= "<ul><li><a href='{$author_url}'>" . self::get_colored_span( 'comment_author_url', "%{$url['host']}%", true, $url['host'] ) . '</a></li>';
 
-			if ( ! empty( $url['path'] ) && '/' != $url['path'] )
-				$output .= '<li' . ( substr_count( trim( $url['path'], '/' ), '/' ) > 0 ? ' class="warning"' : '' ) . '>' . esc_html( $url['path'] ) . '</li>';
+			if ( ! empty( $url['path'] ) && '/' != $url['path'] ) {
 
-			if ( ! empty( $url['query'] ) )
-				$output .= '<li class="warning">?' . esc_html( $url['query'] ). '</li>';
+				$has_multiple_levels = substr_count( trim( $url['path'], '/' ), '/' ) > 0;
+				$warning             = self::get_warning_class( $has_multiple_levels );
+				$output .= '<li' . $warning . '>' . esc_html( $url['path'] ) . '</li>';
+			}
 
-			if ( ! empty( $url['fragment'] ) )
-				$output .= '<li class="warning">' . '#' . esc_html( $url['fragment'] ). '</li>';
+			if ( ! empty( $url['query'] ) ) {
+
+				$warning = self::get_warning_class( true );
+				$output .= '<li' . $warning . '>?' . esc_html( $url['query'] ). '</li>';
+			}
+
+
+			if ( ! empty( $url['fragment'] ) ) {
+
+				$warning = self::get_warning_class( true );
+				$output .= '<li' . $warning . '>' . '#' . esc_html( $url['fragment'] ). '</li>';
+			}
 
 			$output .= '</ul>';
 		}
@@ -176,6 +187,35 @@ class Improved_Comment_Moderation {
 	}
 
 	/**
+	 * @param boolean $warning if display warning class
+	 *
+	 * @return string warning class or empty
+	 */
+	static function get_warning_class( $warning ) {
+	
+		if( ! self::status_has_unmoderated() )
+			return '';
+
+		if( $warning )
+			return ' class="warning"';
+
+		return '';
+	}
+
+	/**
+	 * @return bool if current view includes unmoderated (is not spam or approved view)
+	 */
+	static function status_has_unmoderated() {
+
+		static $has_unmoderated;
+
+		if ( ! isset( $has_unmoderated ) )
+			$has_unmoderated = empty( $_REQUEST['comment_status'] ) || ! in_array( $_REQUEST['comment_status'], array( 'spam', 'approved' ) );
+
+		return $has_unmoderated;
+	}
+
+	/**
 	 * @param string  $field name of database field
 	 * @param string  $value value to count for
 	 * @param bool    $like  fuzzy or strict comparison
@@ -188,7 +228,7 @@ class Improved_Comment_Moderation {
 		if ( empty( $text ) )
 			$text = $value;
 
-		if ( ! empty( $_REQUEST['comment_status'] ) && in_array( $_REQUEST['comment_status'], array( 'spam', 'approved' ) ) )
+		if ( ! self::status_has_unmoderated() )
 			return $text;
 
 		$counts = wp_parse_args( self::get_approved_counts( $field, $value, $like ), array(
