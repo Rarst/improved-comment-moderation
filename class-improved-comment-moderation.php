@@ -64,17 +64,14 @@ class Improved_Comment_Moderation {
 	 */
 	static function manage_columns( $columns ) {
 
-		remove_filter( 'comment_author', 'floated_admin_avatar' );
-		$add_columns = array();
+		if ( get_option( 'show_avatars' ) ) {
 
-		if ( get_option( 'show_avatars' ) )
-			$add_columns['gravatar'] = 'Gravatar';
-
-		$columns = array_merge(
-			array_slice( $columns, 0, 1 ),
-			$add_columns,
-			array_slice( $columns, 1 )
-		);
+			$columns = array_merge(
+				array_slice( $columns, 0, 1 ),
+				array( 'gravatar' => 'Gravatar' ),
+				array_slice( $columns, 1 )
+			);
+		}
 
 		unset( $columns['author'] );
 
