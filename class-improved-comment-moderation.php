@@ -221,6 +221,8 @@ class Improved_Comment_Moderation {
 
 		if ( ! is_array( $counts ) ) {
 
+			$field = esc_sql( $field );
+
 			if ( $like )
 				$where = $wpdb->prepare( "{$field} LIKE %s", $value );
 			else
@@ -279,6 +281,8 @@ class Improved_Comment_Moderation {
 		$count = wp_cache_get( $key, 'comment-moderation' );
 
 		if ( ! is_numeric( $count ) ) {
+
+			$field = esc_sql( $field );
 
 			if ( $like )
 				$where = $wpdb->prepare( "{$field} LIKE %s AND comment_approved = '0'", $value );
