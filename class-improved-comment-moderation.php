@@ -139,7 +139,7 @@ class Improved_Comment_Moderation {
 			$output .= "<ul><li><a href='{$author_url}'>" . self::get_colored_span( 'comment_author_url', "%{$url['host']}%", true, $url['host'] ) . '</a></li>';
 
 			if ( ! empty( $url['path'] ) && '/' != $url['path'] )
-				$output .= '<li' . ( substr_count( $url['path'], '/' ) > 2 ? ' class="warning"' : '' ) . '>' . esc_html( $url['path'] ) . '</li>';
+				$output .= '<li' . ( substr_count( trim( $url['path'], '/' ), '/' ) > 0 ? ' class="warning"' : '' ) . '>' . esc_html( $url['path'] ) . '</li>';
 
 			if ( ! empty( $url['query'] ) )
 				$output .= '<li class="warning">?' . esc_html( $url['query'] ). '</li>';
