@@ -42,6 +42,10 @@ class Improved_Comment_Moderation {
 			color: green;
 		}
 
+		.column-comment .warning {
+				color: darkred;
+		}
+
 		.column-comment .spam, .column-comment .spam a {
 			color: red;
 		}
@@ -132,18 +136,18 @@ class Improved_Comment_Moderation {
 
 			$url = parse_url( str_replace( '&#038;', '&', $author_url ) );
 
-			$output .= "<br /><a href='{$author_url}'>" . self::get_colored_span( 'comment_author_url', "%{$url['host']}%", true, $url['host'] );
+			$output .= "<ul><li><a href='{$author_url}'>" . self::get_colored_span( 'comment_author_url', "%{$url['host']}%", true, $url['host'] ) . '</a></li>';
 
 			if ( ! empty( $url['path'] ) && '/' != $url['path'] )
-				$output .= '<br />' . str_repeat( '&nbsp;', 8 ) . esc_html( $url['path'] );
+				$output .= '<li' . ( substr_count( $url['path'], '/' ) > 2 ? ' class="warning"' : '' ) . '>' . esc_html( $url['path'] ) . '</li>';
 
 			if ( ! empty( $url['query'] ) )
-				$output .= '<br />' . str_repeat( '&nbsp;', 8 ) . '?' . esc_html( $url['query'] );
+				$output .= '<li class="warning">?' . esc_html( $url['query'] ). '</li>';
 
 			if ( ! empty( $url['fragment'] ) )
-				$output .= '<br />' . str_repeat( '&nbsp;', 8 ) . '#' . esc_html( $url['fragment'] );
+				$output .= '<li class="warning">' . '#' . esc_html( $url['fragment'] ). '</li>';
 
-			$output .= '</a><br />';
+			$output .= '</ul>';
 		}
 
 		if ( $wp_list_table->user_can ) {
