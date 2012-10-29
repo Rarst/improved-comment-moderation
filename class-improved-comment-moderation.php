@@ -124,8 +124,9 @@ class Improved_Comment_Moderation {
 
 		$output = '';
 
-		$author  = self::get_colored_span( 'comment_author', get_comment_author() );
-		$output .= '<strong>' . $author . '</strong>' . self::get_pending_text( 'comment_author', $author ) . '<br />';
+		$author         = get_comment_author();
+		$author_colored = self::get_colored_span( 'comment_author', $author );
+		$output .= '<strong>' . $author_colored . '</strong>' . self::get_pending_text( 'comment_author', $author ) . '<br />';
 
 		$author_url = get_comment_author_url();
 
@@ -165,19 +166,19 @@ class Improved_Comment_Moderation {
 
 			if ( ! empty( $comment->comment_author_email ) ) {
 
-				$email   = get_comment_author_email();
-				$email   = self::get_colored_span( 'comment_author_email', $email );
-				$output .= '<br />' . get_comment_author_email_link( $email ) . self::get_pending_text( 'comment_author_email', $email ) . '<br />';
+				$email         = get_comment_author_email();
+				$email_colored = self::get_colored_span( 'comment_author_email', $email );
+				$output .= '<br />' . get_comment_author_email_link( $email_colored ) . self::get_pending_text( 'comment_author_email', $email ) . '<br />';
 			}
 
-			$ip = get_comment_author_IP();
-			$ip = self::get_colored_span( 'comment_author_IP', $ip );
+			$ip         = get_comment_author_IP();
+			$ip_colored = self::get_colored_span( 'comment_author_IP', $ip );
 			$output .= '<br /><a href="edit-comments.php?s=' . get_comment_author_IP() . '&amp;mode=detail';
 
 			if ( 'spam' == $comment_status )
 				$output .= '&amp;comment_status=spam';
 
-			$output .= "\">{$ip}</a>";
+			$output .= "\">{$ip_colored}</a>";
 			$output .= self::get_pending_text( 'comment_author_IP', $ip );
 		}
 
